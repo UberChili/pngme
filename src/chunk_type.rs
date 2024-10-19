@@ -25,6 +25,9 @@ impl ChunkType {
                 return false;
             }
         }
+        if !self.is_reserved_bit_valid() {
+            return false;
+        }
         return true;
     }
 
@@ -75,7 +78,7 @@ impl FromStr for ChunkType {
         let mut result: Vec<u8> = Vec::new();
 
         for character in s.chars() {
-            if character.is_ascii() {
+            if character.is_ascii_alphabetic() {
                 let byte: u8 = character as u8;
                 result.push(byte);
             } else {
