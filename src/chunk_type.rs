@@ -3,14 +3,19 @@ use std::str::FromStr;
 use std::error::Error;
 
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 struct ChunkType {
     chunk_type: Vec<u8>
 }
 
 impl Display for ChunkType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        //let mut to_show: String;
+        for c in self.chunk_type.iter() {
+            let character = *c as char;
+            write!(f, "{}", character)?
+        }
+        Ok(())
     }
 }
 
