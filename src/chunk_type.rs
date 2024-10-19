@@ -1,15 +1,48 @@
+use std::fmt::Display;
+use std::str::FromStr;
+use std::error::Error;
 
+
+#[derive(PartialEq)]
 struct ChunkType {
-    chunk_type: String,
+    chunk_type: Vec<u8>
+}
+
+impl Display for ChunkType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
+
+impl FromStr for ChunkType {
+    type Err = Box<dyn Error>;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut result: Vec<u8> = Vec::new();
+
+        for character in s.chars() {
+            if character.is_ascii() {
+                let byte: u8 = character as u8;
+                result.push(byte);
+            } else {
+                return Err("Error generating Chunk Type from string slice".into())
+            }
+        }
+        Ok(Self { chunk_type: result })
+    }
 }
 
 impl TryFrom<[u8; 4]> for ChunkType {
+    type Error = Box<dyn std::error::Error>;
+
     fn try_from(value: [u8; 4]) -> Result<Self, Self::Error> {
-        for c in value.into_iter() {
+        let value_iter = value.into_iter();
+        for c in value_iter {
             if !c.is_ascii() {
-                todo!()
+                return Err("Error generating Chunk Type from u8 array".into())
             }
         }
+        Ok(Self { chunk_type: value.to_vec() })
     }
 }
 
