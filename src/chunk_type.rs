@@ -3,8 +3,8 @@ use std::fmt::Display;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq)]
-struct ChunkType {
-    chunk_type: Vec<u8>,
+pub struct ChunkType {
+    pub chunk_type: Vec<u8>,
 }
 
 #[allow(dead_code)]
