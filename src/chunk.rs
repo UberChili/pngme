@@ -1,4 +1,8 @@
-use std::{fmt, fmt::Display, u32};
+use std::{
+    fmt::{self, Display},
+    str::from_utf8,
+    u32,
+};
 
 use crc::{Crc, CRC_32_ISO_HDLC};
 
@@ -45,12 +49,23 @@ impl Chunk {
         self.crc
     }
 
-    fn data_as_string(&self) -> String {
-        todo!()
+    fn data_as_string(&self) -> Result<String, std::str::Utf8Error> {
+        let result = from_utf8(&self.chunk_data)?;
+        Ok(result.to_string())
     }
 
     fn as_bytes(&self) -> Vec<u8> {
-        todo!()
+        let length: Vec<u8> = self.length.to_be_bytes().to_vec();
+        let chunk_type_bytes = self.chunk_type.chunk_type.clone();
+        let data = self.chunk_data.clone();
+        let crc = self.crc.to_be_bytes().to_vec();
+
+        let mut result: Vec<u8> = Vec::new();
+        result.extend(length);
+        result.extend(chunk_type_bytes);
+        result.extend(data);
+        result.extend(crc);
+        result
     }
 }
 
