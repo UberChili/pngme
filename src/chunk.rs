@@ -11,25 +11,38 @@ pub struct Chunk {
     crc: u32,
 }
 
+#[allow(dead_code)]
 impl Chunk {
     fn new(chunk_type: ChunkType, data: Vec<u8>) -> Chunk {
-        todo!()
+        let mut extended_vec: Vec<u8> = chunk_type.chunk_type.clone();
+        extended_vec.extend(data.clone());
+
+        let crc = Crc::<u32>::new(&CRC_32_ISO_HDLC);
+        let calculated_crc = crc.checksum(&extended_vec);
+
+        Self {
+            length: data.len() as u32,
+            chunk_type,
+            chunk_data: data,
+            crc: calculated_crc,
+        }
     }
 
     fn length(&self) -> u32 {
-        todo!()
+        self.length
     }
 
-    fn chunk_type(&self) -> ChunkType {
-        todo!()
+    fn chunk_type(&self) -> &ChunkType {
+        &self.chunk_type
     }
 
-    fn chunk_data(&self) -> Vec<u8> {
-        todo!()
+    fn chunk_data(&self) -> &[u8] {
+        let needed_slice = &self.chunk_data;
+        return needed_slice;
     }
 
     fn crc(&self) -> u32 {
-        todo!()
+        self.crc
     }
 
     fn data_as_string(&self) -> String {
@@ -48,25 +61,21 @@ impl TryFrom<&[u8]> for Chunk {
         if bytes.len() < 12 {
             return Err("try_from failed. Data has length less than 12".into());
         } else {
-            let length_bytes = &bytes[0..4];
-            let length = u32::from_be_bytes(
-                length_bytes
-                    .try_into()
-                    .expect("slice for length_bytes with incorrect length"),
-            );
+            //let length_bytes = &bytes[0..4];
+            //let length = u32::from_be_bytes(
+            //    length_bytes
+            //        .try_into()
+            //        .expect("slice for length_bytes with incorrect length"),
+            //);
+
             let chunk_type: Vec<u8> = bytes[4..8].to_vec();
             let data_bytes = &bytes[8..bytes.len() - 4];
-            //let crc_bytes = &bytes[bytes.len() - 4..bytes.len()];
-            //let crc = u32::from_be_bytes(
-            //    crc_bytes
-            //        .try_into()
-            //        .expect("slice for crc_bytes with incorrect length"),
-            //);
+
             let crc = Crc::<u32>::new(&CRC_32_ISO_HDLC);
-            let calculated_crc = crc.checksum(&bytes[bytes.len() - 4..bytes.len()]);
+            let calculated_crc = crc.checksum(&bytes[4..bytes.len() - 4]);
 
             Ok(Self {
-                length,
+                length: data_bytes.len() as u32,
                 chunk_type: ChunkType { chunk_type },
                 chunk_data: data_bytes.to_vec(),
                 crc: calculated_crc,
