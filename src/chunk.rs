@@ -1,4 +1,4 @@
-use std::u32;
+use std::{fmt, fmt::Display, u32};
 
 use crc::{Crc, CRC_32_ISO_HDLC};
 
@@ -9,6 +9,36 @@ pub struct Chunk {
     chunk_type: ChunkType,
     chunk_data: Vec<u8>,
     crc: u32,
+}
+
+impl Chunk {
+    fn new(chunk_type: ChunkType, data: Vec<u8>) -> Chunk {
+        todo!()
+    }
+
+    fn length(&self) -> u32 {
+        todo!()
+    }
+
+    fn chunk_type(&self) -> ChunkType {
+        todo!()
+    }
+
+    fn chunk_data(&self) -> Vec<u8> {
+        todo!()
+    }
+
+    fn crc(&self) -> u32 {
+        todo!()
+    }
+
+    fn data_as_string(&self) -> String {
+        todo!()
+    }
+
+    fn as_bytes(&self) -> Vec<u8> {
+        todo!()
+    }
 }
 
 impl TryFrom<&[u8]> for Chunk {
@@ -42,6 +72,17 @@ impl TryFrom<&[u8]> for Chunk {
                 crc: calculated_crc,
             })
         }
+    }
+}
+
+impl Display for Chunk {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "Chunk {{",)?;
+        writeln!(f, "  Length: {}", self.length)?;
+        writeln!(f, "  Type: {}", self.chunk_type)?;
+        writeln!(f, "  Data: {} bytes", self.chunk_data.len())?;
+        writeln!(f, "  CRC: {:#010x}", self.crc)?;
+        write!(f, "}}")
     }
 }
 
