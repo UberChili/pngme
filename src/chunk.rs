@@ -86,8 +86,16 @@ impl TryFrom<&[u8]> for Chunk {
             let chunk_type: Vec<u8> = bytes[4..8].to_vec();
             let data_bytes = &bytes[8..bytes.len() - 4];
 
+            let crc_bytes = &bytes[bytes.len() - 4..bytes.len()];
+
             let crc = Crc::<u32>::new(&CRC_32_ISO_HDLC);
             let calculated_crc = crc.checksum(&bytes[4..bytes.len() - 4]);
+
+            let provided_crc = u32::from_be_bytes(crc_bytes.try_into()?);
+
+            if calculated_crc != provided_crc {
+                return Err("CRC mismatch".into());
+            }
 
             Ok(Self {
                 length: data_bytes.len() as u32,
