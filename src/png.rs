@@ -1,10 +1,24 @@
-use std::{u32, usize};
+use std::{fmt::Display, u32, usize};
 
 use crate::chunk::Chunk;
 
 struct Png {
     header: [u8; 8],
-    chunks: Vec<Chunk>
+    chunks: Vec<Chunk>,
+}
+
+impl Display for Png {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "PNG {{")?;
+        write!(f, "Header: ")?;
+        for byte in self.header() {
+            write!(f, "{:02X} ", byte)?;
+        }
+        writeln!(f)?;
+        // Optionally, print chunk information here as well
+        writeln!(f, "  Number of chunks: {}", self.chunks.len())?;
+        writeln!(f, "}}")
+    }
 }
 
 impl TryFrom<&[u8]> for Png {
@@ -13,12 +27,12 @@ impl TryFrom<&[u8]> for Png {
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         // Check if slice has at least enough elements to form the header of the file
         if value.len() <= 8 {
-            return Err("Invalid chunks. Can't be zero".into())
+            return Err("Invalid chunks. Can't be zero".into());
         } else {
             let header: &[u8] = &value[0..8];
             // Check if header corresponds to the correct standard header
             if header != Png::STANDARD_HEADER {
-                return Err("Invalid header. Can't form PNG".into())
+                return Err("Invalid header. Can't form PNG".into());
             } else {
                 let mut formed_chunks: Vec<Chunk> = Vec::new();
                 let remainder: &[u8] = &value[8..];
@@ -30,7 +44,9 @@ impl TryFrom<&[u8]> for Png {
                     }
 
                     // Get length
-                    let length_bytes = remainder[0..4].try_into().map_err(|_| "Failed to extract chunk length")?;
+                    let length_bytes = remainder[0..4]
+                        .try_into()
+                        .map_err(|_| "Failed to extract chunk length")?;
                     let length = u32::from_be_bytes(length_bytes);
 
                     // Ensure there's enough bytes for the chunk (length + some additional fields)
@@ -51,63 +67,96 @@ impl TryFrom<&[u8]> for Png {
                         //    .copied()
                         //    .collect();
 
-                        let chunk_bytes = &remainder[current_position .. current_position + chunk_size];
+                        let chunk_bytes =
+                            &remainder[current_position..current_position + chunk_size];
 
                         let chunk = Chunk::try_from(chunk_bytes)?;
                         formed_chunks.push(chunk);
 
-                        // advance position 
+                        // advance position
                         current_position += chunk_size;
                     }
                 }
-                Ok(Self { header: header.try_into().map_err(|_| "Error creating final header")?, chunks: formed_chunks })
+                Ok(Self {
+                    header: header
+                        .try_into()
+                        .map_err(|_| "Error creating final header")?,
+                    chunks: formed_chunks,
+                })
             }
         }
     }
 }
 
+#[allow(dead_code)]
 impl Png {
     // Header needed for every PNG file
     pub const STANDARD_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
 
     fn from_chunks(chunks: Vec<Chunk>) -> Png {
-        todo!()
+        // Should check if empty?
+
+        Self {
+            header: Self::STANDARD_HEADER,
+            chunks,
+        }
     }
 
     fn append_chunk(&mut self, chunk: Chunk) {
-        todo!()
+        self.chunks.push(chunk);
     }
 
-    fn remove_first_chunk(&mut self, chunk_type: &str) -> Result<Chunk> {
-        todo!()
+    fn remove_first_chunk(
+        &mut self,
+        chunk_type: &str,
+    ) -> Result<Chunk, Box<dyn std::error::Error>> {
+        if let Some(index) = self
+            .chunks
+            .iter()
+            .position(|chunk| chunk.chunk_type().to_string() == chunk_type)
+        {
+            Ok(self.chunks.remove(index))
+        } else {
+            Err("Chunk not found".into())
+        }
     }
 
     fn header(&self) -> &[u8; 8] {
-        todo!()
+        &self.header
     }
 
     fn chunks(&self) -> &[Chunk] {
-        todo!()
+        &self.chunks.as_slice()
     }
 
+    /// Searches for a `Chunk` with the specified `chunk_type` and returns the first
+    /// matching `Chunk` from this `Png`.
     fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
-        todo!()
+        self.chunks
+            .iter()
+            .find(|chunk| chunk.chunk_type().to_string() == chunk_type)
     }
-    
+
+    /// Returns this `Png` as a byte sequence.
+    /// These bytes will contain the header followed by the bytes of all of the chunks.
     fn as_bytes(&self) -> Vec<u8> {
-        todo!()
+        let mut bytes = self.header().to_vec();
+
+        self.chunks.iter().for_each(|chunk| {
+            bytes.extend(chunk.as_bytes());
+        });
+
+        bytes
     }
 }
 
-
-#![allow(unused_variables)]
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::chunk::Chunk;
     use crate::chunk_type::ChunkType;
     use std::convert::TryFrom;
-    use std::str::FromStr;
+    //use std::str::FromStr;
 
     fn testing_chunks() -> Vec<Chunk> {
         vec![
@@ -122,7 +171,10 @@ mod tests {
         Png::from_chunks(chunks)
     }
 
-    fn chunk_from_strings(chunk_type: &str, data: &str) -> Result<Chunk> {
+    fn chunk_from_strings(
+        chunk_type: &str,
+        data: &str,
+    ) -> Result<Chunk, Box<dyn std::error::Error>> {
         use std::str::FromStr;
 
         let chunk_type = ChunkType::from_str(chunk_type)?;
