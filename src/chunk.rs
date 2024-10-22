@@ -17,7 +17,7 @@ pub struct Chunk {
 
 #[allow(dead_code)]
 impl Chunk {
-    fn new(chunk_type: ChunkType, data: Vec<u8>) -> Chunk {
+    pub fn new(chunk_type: ChunkType, data: Vec<u8>) -> Chunk {
         let mut extended_vec: Vec<u8> = chunk_type.chunk_type.clone();
         extended_vec.extend(data.clone());
 
@@ -36,7 +36,7 @@ impl Chunk {
         self.length
     }
 
-    fn chunk_type(&self) -> &ChunkType {
+    pub fn chunk_type(&self) -> &ChunkType {
         &self.chunk_type
     }
 
@@ -49,12 +49,12 @@ impl Chunk {
         self.crc
     }
 
-    fn data_as_string(&self) -> Result<String, std::str::Utf8Error> {
+    pub fn data_as_string(&self) -> Result<String, std::str::Utf8Error> {
         let result = from_utf8(&self.chunk_data)?;
         Ok(result.to_string())
     }
 
-    fn as_bytes(&self) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Vec<u8> {
         let length: Vec<u8> = self.length.to_be_bytes().to_vec();
         let chunk_type_bytes = self.chunk_type.chunk_type.clone();
         let data = self.chunk_data.clone();
