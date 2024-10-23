@@ -40,7 +40,7 @@ impl Chunk {
         &self.chunk_type
     }
 
-    fn chunk_data(&self) -> &[u8] {
+    pub fn chunk_data(&self) -> &[u8] {
         let needed_slice = &self.chunk_data;
         return needed_slice;
     }

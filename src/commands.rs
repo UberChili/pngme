@@ -1,28 +1,58 @@
 use std::fs;
+use std::str::FromStr;
 
 use crate::args::{DecodeArgs, EncodeArgs, PrintArgs, RemoveArgs};
 use crate::chunk::Chunk;
 use crate::chunk_type::ChunkType;
 use crate::png::Png;
-use crate::{Error, Result};
+use crate::Result;
 
 /// Encodes a message into a PNG file and saves the Result
 pub fn encode(args: EncodeArgs) -> Result<()> {
     let filename = args.filepath;
-    let chunk_type: [u8; 4] = args.chunk_type.as_bytes().try_into()?;
+    let chunk_type = args.chunk_type;
     let message = args.message;
-    let out_filepath = args.out_file;
+    let out_filename = args.out_file;
 
-    let file: Vec<u8> = fs::read(filename)?;
+    let file = fs::read(&filename.as_str())?;
 
-    let ct = ChunkType::try_from(chunk_type);
+    let mut png = Png::try_from(file.as_slice())?;
+
+    let chunk_type = ChunkType::from_str(&chunk_type)?;
+    let chunk = Chunk::new(chunk_type, message.as_bytes().to_vec());
+
+    png.append_chunk(chunk);
+
+    fs::write(out_filename, png.as_bytes())?;
 
     Ok(())
 }
 
 /// Searches for a message hidden in a PNG file and prints the message if one is found
 pub fn decode(args: DecodeArgs) -> Result<()> {
-    todo!()
+    let filename = args.filepath;
+    let chunk_type = args.chunk_type;
+
+    let file = fs::read(&filename.as_str())?;
+
+    let png = Png::try_from(file.as_slice())?;
+
+    let chunk = png
+        .chunks()
+        .iter()
+        .find(|c| c.chunk_type().to_string() == chunk_type);
+
+    if let Some(chunk) = chunk {
+        let message = String::from_utf8(chunk.chunk_data().to_vec())?;
+        println!("Message: {}", message);
+    } else {
+        println!(
+            "Error: No chunk of type '{}' was found in the file",
+            chunk_type
+        );
+    }
+
+    Ok(())
 }
 
 /// Removes a chunk from a PNG file and saves the result

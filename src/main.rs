@@ -18,21 +18,21 @@ fn main() -> Result<()> {
             //let message = encode_args.message;
             //let out_filepath = encode_args.out_file;
 
-            commands::encode(encode_args);
+            let _ = commands::encode(encode_args);
         }
         args::PngMeArgs::Decode(decode_args) => {
             //let filename = decode_args.filepath;
             //let chunk_type = decode_args.chunk_type.as_str();
-            commands::decode(decode_args);
+            let _ = commands::decode(decode_args);
         }
         args::PngMeArgs::Remove(remove_args) => {
             //let filename = remove_args.filepath;
             //let chunk_type = remove_args.chunk_type.as_str();
-            commands::remove(remove_args);
+            let _ = commands::remove(remove_args);
         }
         args::PngMeArgs::Print(print_args) => {
             //let filename = print_args.filepath;
-            commands::print_chunks(print_args);
+            let _ = commands::print_chunks(print_args);
         }
     }
 
