@@ -1,4 +1,4 @@
-use clap::{CommandFactory, Parser};
+use clap::Parser;
 
 mod args;
 mod chunk;
@@ -20,16 +20,18 @@ fn main() -> Result<()> {
             println!("{} {} {} {}", filename, chunk_type, message, out_filepath);
         }
         args::PngMeArgs::Decode(decode_args) => {
-            todo!()
+            let filename = decode_args.filepath;
+            let chunk_type = decode_args.chunk_type.as_str();
+            println!("{} {} ", filename, chunk_type);
         }
         args::PngMeArgs::Remove(remove_args) => {
-            todo!()
+            let filename = remove_args.filepath;
+            let chunk_type = remove_args.chunk_type.as_str();
+            println!("{} {} ", filename, chunk_type);
         }
         args::PngMeArgs::Print(print_args) => {
-            todo!()
-        }
-        _ => {
-            return Err("Incorrect arguments".into());
+            let filename = print_args.filepath;
+            println!("{}", filename);
         }
     }
 
