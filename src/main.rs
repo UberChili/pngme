@@ -1,6 +1,4 @@
-use core::panic;
-
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 
 mod args;
 mod chunk;
@@ -13,28 +11,25 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 fn main() -> Result<()> {
     let args = args::Args::parse();
-
-    match args.command.to_lowercase().as_str() {
-        "encode" => {
-            let sub_args = args::EncodeArgs::parse();
-            let filepath = sub_args.filepath;
-            let chunk_type = sub_args.chunk_type.as_str();
-            let msg = sub_args.message;
-            let out_filepath = sub_args.out_file;
-
-            println!("{} {} {} {}", filepath, chunk_type, msg, out_filepath);
+    match args.command {
+        args::PngMeArgs::Encode(encode_args) => {
+            let filename = encode_args.filepath;
+            let chunk_type = encode_args.chunk_type.as_str();
+            let message = encode_args.message;
+            let out_filepath = encode_args.out_file;
+            println!("{} {} {} {}", filename, chunk_type, message, out_filepath);
         }
-        "decode" => {
-            println!("This would decode")
+        args::PngMeArgs::Decode(decode_args) => {
+            todo!()
         }
-        "remove" => {
-            println!("This would remove")
+        args::PngMeArgs::Remove(remove_args) => {
+            todo!()
         }
-        "print" => {
-            println!("This would just print")
+        args::PngMeArgs::Print(print_args) => {
+            todo!()
         }
         _ => {
-            return Err("Wrong arguments".into());
+            return Err("Incorrect arguments".into());
         }
     }
 
