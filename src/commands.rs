@@ -33,13 +33,7 @@ pub fn remove(args: RemoveArgs) -> Result<()> {
 /// Prints all of the chunks in a PNG file
 pub fn print_chunks(args: PrintArgs) -> Result<()> {
     let filename = args.filepath;
-
-    println!("Attempting to open {}", filename);
-
     let file: Vec<u8> = fs::read(filename)?;
-
-    //let chunks = Chunk::try_from(file.as_slice());
-
     let png = Png::try_from(file.as_slice())?;
 
     for chunk in png.chunks() {
