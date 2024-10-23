@@ -1,3 +1,5 @@
+use core::panic;
+
 use clap::Parser;
 
 mod args;
@@ -10,24 +12,29 @@ pub type Error = Box<dyn std::error::Error>;
 pub type Result<T> = std::result::Result<T, Error>;
 
 fn main() -> Result<()> {
-    let cmd_to_run = args::Args::parse().command.as_str();
+    let args = args::Args::parse();
 
-    match cmd_to_run {
+    match args.command.to_lowercase().as_str() {
         "encode" => {
-            let args = args::EncodeArgs::parse();
-            println!("{:?}", args);
+            let sub_args = args::EncodeArgs::parse();
+            let filepath = sub_args.filepath;
+            let chunk_type = sub_args.chunk_type.as_str();
+            let msg = sub_args.message;
+            let out_filepath = sub_args.out_file;
+
+            println!("{} {} {} {}", filepath, chunk_type, msg, out_filepath);
         }
         "decode" => {
-            let args = args::DecodeArgs::parse();
-            println!("{:?}", args);
+            println!("This would decode")
         }
         "remove" => {
-            let args = args::RemoveArgs::parse();
-            println!("{:?}", args);
+            println!("This would remove")
         }
         "print" => {
-            let args = args::PrintArgs::parse();
-            println!("{:?}", args);
+            println!("This would just print")
+        }
+        _ => {
+            return Err("Wrong arguments".into());
         }
     }
 

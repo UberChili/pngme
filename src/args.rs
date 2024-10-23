@@ -3,17 +3,18 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(version)]
 pub struct Args {
-    #[arg(short, long)]
+    /// Command
+    #[arg()]
     pub command: String,
 }
 
 /// Defining enum with possible set of command-line arguments
-pub enum PngMeArgs {
-    Encode(EncodeArgs),
-    Decode(DecodeArgs),
-    Remove(RemoveArgs),
-    Print(PrintArgs),
-}
+//pub enum PngMeArgs {
+//    Encode(EncodeArgs),
+//    Decode(DecodeArgs),
+//    Remove(RemoveArgs),
+//    Print(PrintArgs),
+//}
 
 #[derive(Parser, Debug)]
 #[command(version)]
