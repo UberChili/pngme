@@ -31,11 +31,12 @@ pub struct EncodeArgs {
     pub chunk_type: String,
 
     /// Message
-    #[arg(short, long, default_value_t = String::from("Hello"))]
+    //#[arg(short, long, default_value_t = String::from("Hello"))]
+    #[arg(short, long)]
     pub message: String,
 
     /// Output file (optional)
-    #[arg(short, long, default_value_t = String::from("output.png"))]
+    #[arg(short, long)]
     pub out_file: String,
 }
 
