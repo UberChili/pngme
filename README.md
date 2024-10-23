@@ -17,9 +17,9 @@ Or you can install globally so you can run it from anywhere:
 cargo install --path .
 ```
 ## Usage
-Run a command without arguments to get a list of all needed options or arguments:
+Run without any arguments to get a list of possible commands:
 ```bash
-pngme <COMMAND>
+pngme 
 ```
 - Commands:
     - encode
@@ -28,6 +28,12 @@ pngme <COMMAND>
     - print
     - help
 
+Run a **command** without additional arguments to get a list of the needed options:
+```bash
+pngme <COMMAND>
+# For example
+pngme encode
+```
 ### Encoding a message in a PNG file:
 ```bash
 pngme encode --filepath [filename.png] --chunk-type rUsT --message "Hello, this is a very secret message!" --out-file [out_name.png]
