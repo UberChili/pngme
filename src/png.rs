@@ -2,7 +2,7 @@ use std::{fmt::Display, u32, usize};
 
 use crate::chunk::Chunk;
 
-struct Png {
+pub struct Png {
     header: [u8; 8],
     chunks: Vec<Chunk>,
 }
@@ -92,7 +92,7 @@ impl Png {
     // Header needed for every PNG file
     pub const STANDARD_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
 
-    fn from_chunks(chunks: Vec<Chunk>) -> Png {
+    pub fn from_chunks(chunks: Vec<Chunk>) -> Png {
         // Should check if empty?
 
         Self {
@@ -101,11 +101,11 @@ impl Png {
         }
     }
 
-    fn append_chunk(&mut self, chunk: Chunk) {
+    pub fn append_chunk(&mut self, chunk: Chunk) {
         self.chunks.push(chunk);
     }
 
-    fn remove_first_chunk(
+    pub fn remove_first_chunk(
         &mut self,
         chunk_type: &str,
     ) -> Result<Chunk, Box<dyn std::error::Error>> {
@@ -120,11 +120,11 @@ impl Png {
         }
     }
 
-    fn header(&self) -> &[u8; 8] {
+    pub fn header(&self) -> &[u8; 8] {
         &self.header
     }
 
-    fn chunks(&self) -> &[Chunk] {
+    pub fn chunks(&self) -> &[Chunk] {
         &self.chunks.as_slice()
     }
 
