@@ -12,7 +12,10 @@ Then you can run the executable via:
 ```bash
 ./target/release/pngme
 ```
-
+Or you can install globally so you can run it from anywhere:
+```bash
+cargo install --path .
+```
 ## Usage
 Run a command without arguments to get a list of all needed options or arguments:
 ```bash
