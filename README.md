@@ -42,3 +42,7 @@ pngme encode --filepath [filename.png] --chunk-type rUsT --message "Hello, this 
 ```bash
 pngme decode --filepath [filename.png] --chunk-type rUsT
 ```
+This would print:
+```bash
+Message: Hello, this is a very secret message!
+```
