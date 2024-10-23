@@ -10,14 +10,26 @@ pub type Error = Box<dyn std::error::Error>;
 pub type Result<T> = std::result::Result<T, Error>;
 
 fn main() -> Result<()> {
-    let args = commands::Args::parse();
+    let cmd_to_run = args::Args::parse().command.as_str();
 
-    println!("{:?}", args);
-
-    let filepath = args.filepath;
-    let chunk_type = args.chunk_type;
-    let message = args.message;
-    let output_file = args.out_file;
+    match cmd_to_run {
+        "encode" => {
+            let args = args::EncodeArgs::parse();
+            println!("{:?}", args);
+        }
+        "decode" => {
+            let args = args::DecodeArgs::parse();
+            println!("{:?}", args);
+        }
+        "remove" => {
+            let args = args::RemoveArgs::parse();
+            println!("{:?}", args);
+        }
+        "print" => {
+            let args = args::PrintArgs::parse();
+            println!("{:?}", args);
+        }
+    }
 
     Ok(())
 }
